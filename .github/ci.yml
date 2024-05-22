@@ -1,0 +1,43 @@
+# give a name for your workflow
+name: CI
+# define your trigger
+on:
+    push:
+        branches-ignore:
+        - main
+# define the steps that are to be run
+jobs:
+    ci:
+        # define what type of runner should be used below
+        runs-on: ubuntu-latest
+        steps:
+            # get code
+            # set up envinronent - right version of python, right version of dependencies
+            # dbt stuff
+            # run checks, tests, produce reports
+            # dbt build
+            - name: Checkout code
+              uses: actions/checkout@v3
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: 3.10.12
+            - name: Install Poetry
+              run: |
+                python -V
+                curl -sSL https://install.python-poetry.org | python3 -
+                poetry config virtualenvs.create true
+                poetry config virtualenvs.in-project true
+                ls -a # used for logging and debugging
+            - name: Create Profile Yaml
+              env:
+                  DBT_PROFILE_YAML: ${{ secrets.DBT_PROFILE_YAML }}
+              run: |
+                  mkdir -p profiles
+                  echo "$DBT_PROFILE_YAML" | base64 --decode > profiles/profiles.yml
+            - name: Install DBT Dependencies
+              run: |
+                  poetry run dbt deps
+            - name: DBT Build
+              run: |
+                  poetry run dbt build --profiles-dir profiles
