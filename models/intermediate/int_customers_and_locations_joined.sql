@@ -2,6 +2,7 @@ with
 
 customers as (
 
+
     select * from {{ ref('stg_tech_store__customers') }}
 
 ),
