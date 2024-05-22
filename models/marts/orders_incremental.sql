@@ -18,7 +18,7 @@ orders as (
 
   -- this filter will only be applied on an incremental run
 
-        where updated_at >= (select WHERE updated_at BETWEEN DATEADD(day, -7, GETDATE()) AND GETDATE())
+        where created_at >= (select max(created_at )  from {{this}} WHERE created_at BETWEEN DATEADD(day, -7, GETDATE()) AND GETDATE())
 
     {% endif %}
 
