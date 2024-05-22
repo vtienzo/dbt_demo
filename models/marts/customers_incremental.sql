@@ -21,7 +21,7 @@ customers as (
 
   -- this filter will only be applied on an incremental run
 
-        where created_at_est  (select max(created_at_est) from {{this}})
+       where created_at >= ( select max(created_at)  from dbt_dev.staging.stg_tech_store__customers)
 
     {% endif %}
 
